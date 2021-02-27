@@ -27,7 +27,7 @@ export default {
 	computed: {
 		showModel: {
 			get: function () {
-				return this.value;
+				return this.show;
 			},
 			set: function (value) {
 				if (!value) {
