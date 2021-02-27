@@ -4,6 +4,7 @@
 			<Header />
 			<div class="content">
 				<router-view />
+				<notifications class="mt-2" />
 			</div>
 		</v-app>
 	</div>
@@ -21,6 +22,7 @@ export default {
 @import './styles/styles.sass'
 
 html
+	height: 100vh
 	overflow: hidden
 
 #app
@@ -32,6 +34,7 @@ html
 	height: 100vh
 
 #app .content
-	overflow-y: scroll
+	height: 100%
+	overflow-y: auto
 	padding: 40px 120px 0px 120px
 </style>
