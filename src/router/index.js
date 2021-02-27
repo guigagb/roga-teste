@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Users from '../views/Users.vue'
+import Users from '../views/Users/Users.vue'
 
 Vue.use(VueRouter)
 
