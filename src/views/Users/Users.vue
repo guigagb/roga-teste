@@ -3,6 +3,7 @@
 		<v-row>
 			<v-col md="3" sm="12" cols="12">
 				<v-text-field
+					v-model="searchValue"
 					dense
 					hide-details
 					solo
@@ -15,10 +16,17 @@
 				<v-row>
 					<v-col md="8" class="d-flex align-center">
 						<label class="font-weight-bold mr-3">Filtro:</label>
-						<v-select dense hide-details solo :items="itemsFilter" v-model="itemFilter"></v-select>
+						<v-select
+							dense
+							hide-details
+							solo
+							:return-object="false"
+							:items="itemsFilter"
+							v-model="itemFilter"
+						></v-select>
 					</v-col>
 					<v-col md="4">
-						<v-btn dense color="primary">
+						<v-btn @click="openModalUser()" dense color="primary">
 							<v-icon class="mr-2">mdi mdi-account-plus</v-icon>
 							<span class="bold">Novo Aluno</span>
 						</v-btn>
@@ -27,17 +35,24 @@
 			</v-col>
 		</v-row>
 		<v-row class="container-cards-user mt-12">
-			<v-col md="3" sm="6" cols="12" v-for="i in 8" :key="i" class="container-card-user">
-				<v-card class="card-user">
+			<v-col
+				md="3"
+				sm="6"
+				cols="12"
+				v-for="user in usersFiltered"
+				:key="user.id"
+				class="container-card-user"
+			>
+				<v-card :disabled="user.ativo == 0" class="card-user">
 					<v-card-text>
 						<div class="d-flex">
 							<div>
 								<v-list-item-avatar class="mr-4">
-									<v-img :src="`http://www.reallatas.com.br/foto_funcionarios/05178918169.jpg`"></v-img>
+									<v-img :src="`${user.foto}`"></v-img>
 								</v-list-item-avatar>
 							</div>
 							<div class="d-flex flex-column align-start align-self-center">
-								<label class="bold">Nome do Usuário</label>
+								<label class="bold">{{user.nome}}</label>
 								<span class="mt-1 font-small">Última avaliação: 12/10/2019</span>
 							</div>
 						</div>
@@ -45,23 +60,41 @@
 					<v-divider></v-divider>
 					<v-card-actions>
 						<div class="d-flex flex-column align-start mr-2">
-							<div>guilherme@gmail.com</div>
+							<div>{{user.email}}</div>
 							<div class="d-flex">
-								<div class="mr-2">26 anos</div>
-								<div>(61) 98309-0055</div>
+								<div class="mr-2">{{user.idade}} anos</div>
+								<div>{{user.telefone}}</div>
 							</div>
 						</div>
 						<v-spacer></v-spacer>
 						<div>
-							<v-btn class="mr-1" fab elevation="1" small>
+							<v-btn @click="openModalUser(user.id)" class="mr-1" fab elevation="1" small>
 								<v-icon color="primary">mdi mdi-pencil</v-icon>
 							</v-btn>
-							<v-btn fab elevation="1" small>
-								<v-icon color="primary">mdi mdi-dots-horizontal</v-icon>
-							</v-btn>
+							<v-menu offset-y>
+								<template v-slot:activator="{ on, attrs }">
+									<v-btn fab elevation="1" v-bind="attrs" v-on="on" small>
+										<v-icon color="primary">mdi mdi-dots-horizontal</v-icon>
+									</v-btn>
+								</template>
+								<v-list>
+									<v-list-item>
+										<v-list-item-title>Excluir</v-list-item-title>
+									</v-list-item>
+									<v-list-item>
+										<v-list-item-title>Desativar</v-list-item-title>
+									</v-list-item>
+								</v-list>
+							</v-menu>
 						</div>
 					</v-card-actions>
 				</v-card>
+			</v-col>
+			<v-col v-if="users.length == 0" md="12">
+				<span>Não há alunos cadastrados :(</span>
+			</v-col>
+			<v-col v-if="users.length != 0 && usersFiltered.length == 0" md="12">
+				<span>Não há alunos com os critérios de busca utilizado :(</span>
 			</v-col>
 		</v-row>
 		<mdlForm ref="mdlFormUser" />
@@ -69,7 +102,8 @@
 </template>
 
 <script>
-import mdlForm from "./mdlForm.vue";
+import { mapGetters } from "vuex";
+import mdlForm from "./mdlFormUser.vue";
 
 export default {
 	components: { mdlForm },
@@ -78,23 +112,48 @@ export default {
 			itemFilter: undefined,
 			itemsFilter: [
 				{ text: "Todos", value: "T" },
-				{ text: "Ativos", value: "A" },
-				{ text: "Inativos", value: "I" },
+				{ text: "Ativos", value: "1" },
+				{ text: "Inativos", value: "0" },
 			],
+			searchValue: "",
 		};
 	},
+	computed: {
+		...mapGetters("users", ["users"]),
+		usersFiltered() {
+			return this.users.filter((user) => {
+				let canReturn = true;
+
+				// filtro pelo status (ativo / inativo / todos)
+				if (this.itemFilter != "T" && user.ativo != this.itemFilter) {
+					canReturn = false;
+				}
+
+				// filtro pelo nome ou email
+				let searchValue = this.searchValue.trim().toUpperCase();
+				if (searchValue != "") {
+					let nome = user.nome.toUpperCase();
+					let email = user.email.toUpperCase();
+
+					if (nome.indexOf(searchValue) == -1 && email.indexOf(searchValue) == -1) canReturn = false;
+				}
+
+				return canReturn;
+			});
+		},
+	},
+	methods: {
+		openModalUser(id) {
+			this.$refs.mdlFormUser.open(id);
+		},
+	},
 	async mounted() {
-		this.itemFilter = this.itemsFilter[0];
-		this.$refs.mdlFormUser.open();
+		this.itemFilter = this.itemsFilter[0].value;
 	},
 };
 </script>
 
 <style lang="sass">
-.users
-
-.users .container-cards-user
-
 .users .container-cards-user .container-card-user
 	padding: 10px
 </style>
