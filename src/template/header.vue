@@ -6,7 +6,9 @@
 				<v-card elevation="0" color="#fe6f5e" class="card-nav-user d-flex rounded-0 full-height">
 					<div class="flex-grow-1 d-flex justify-center px-6">
 						<v-list-item-avatar class="mr-4">
-							<v-img :src="`http://www.reallatas.com.br/foto_funcionarios/05178918169.jpg`"></v-img>
+							<v-img
+								:src="`https://avatars.githubusercontent.com/u/42628942?s=160&u=74215e4df9ba494d8d1921edb452658abe642dbb&v=4.jpg`"
+							></v-img>
 						</v-list-item-avatar>
 						<div class="flex-grow-1 d-flex flex-column align-start justify-center full-height">
 							<label class="font-weight-medium">Guilherme</label>
