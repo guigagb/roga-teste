@@ -43,7 +43,7 @@
 				:key="user.id"
 				class="container-card-user"
 			>
-				<v-card :disabled="user.ativo == 0" class="card-user">
+				<v-card class="card-user">
 					<v-card-text>
 						<div class="d-flex">
 							<div>
@@ -68,20 +68,24 @@
 						</div>
 						<v-spacer></v-spacer>
 						<div>
-							<v-btn @click="openModalUser(user.id)" class="mr-1" fab elevation="1" small>
+							<v-btn
+								:disabled="user.ativo == 0"
+								@click="openModalUser(user.id)"
+								class="mr-1"
+								fab
+								elevation="1"
+								small
+							>
 								<v-icon color="primary">mdi mdi-pencil</v-icon>
 							</v-btn>
 							<v-menu offset-y>
 								<template v-slot:activator="{ on, attrs }">
-									<v-btn fab elevation="1" v-bind="attrs" v-on="on" small>
+									<v-btn :disabled="user.ativo == 0" fab elevation="1" v-bind="attrs" v-on="on" small>
 										<v-icon color="primary">mdi mdi-dots-horizontal</v-icon>
 									</v-btn>
 								</template>
 								<v-list>
-									<v-list-item>
-										<v-list-item-title>Excluir</v-list-item-title>
-									</v-list-item>
-									<v-list-item>
+									<v-list-item @click="disableUser(user)">
 										<v-list-item-title>Desativar</v-list-item-title>
 									</v-list-item>
 								</v-list>
@@ -102,7 +106,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import mdlForm from "./mdlFormUser.vue";
 
 export default {
@@ -143,8 +147,12 @@ export default {
 		},
 	},
 	methods: {
+		...mapMutations("users", ["updateUser"]),
 		openModalUser(id) {
 			this.$refs.mdlFormUser.open(id);
+		},
+		disableUser(user) {
+			this.updateUser({ ...user, ativo: 0 });
 		},
 	},
 	async mounted() {

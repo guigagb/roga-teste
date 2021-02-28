@@ -8,5 +8,5 @@ export const pushUser = (state, user) => {
 
 export const updateUser = (state, user) => {
     let index = state.users.findIndex(oldUser => oldUser.id == user.id)
-    state.users[index] = user
+    state.users.splice(index, 1, user)
 }

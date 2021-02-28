@@ -2,7 +2,7 @@
 	<div id="app">
 		<v-app class="d-flex">
 			<Header />
-			<div class="content">
+			<div class="container-content">
 				<router-view />
 				<notifications class="mt-2" />
 			</div>
@@ -33,7 +33,7 @@ html
 	color: #2c3e50
 	height: 100vh
 
-#app .content
+#app .container-content
 	height: 100%
 	overflow-y: auto
 	padding: 40px 120px 0px 120px
